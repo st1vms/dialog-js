@@ -22,9 +22,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+/**
+ * @typedef {Object} DialogConfig
+ * @property {boolean} [backdrop=true] Enable/disable backdrop
+ * @property {boolean} [backdropCanClose=true] Whether clicking backdrop closes the dialog
+ * @property {boolean} [closeButton=true] Whether to show a close button
+ * @property {"left"|"right"} [closeButtonPosition="right"] Top corner position of the close button (default: right)
+ * @property {boolean} [dom=true] If false, use the string returned by onshow instead of the DOM element
+ * @property {() => string|void} [onshow] Called after the dialog box opens.
+ * @property {() => void} [onload] Called after the content has been loaded and displayed.
+ * @property {() => boolean|void} [onclose] Called before each closure; returns false to cancel the closure.
+ */
 class Dialog {
 
-    #is_open;
+    is_open;
     #defaultConfig = {
         backdrop: true,
         backdropCanClose: true,
@@ -33,8 +44,13 @@ class Dialog {
         dom: true
     }
 
-    constructor(dialogContentElement, config) {
-        this.dialogContentElement = dialogContentElement
+    /**
+   * Create and initialize a Dialog.
+   * @param {HTMLElement} dialogElement The dialog container element.
+   * @param {DialogConfig} [config] Object for configuration options.
+   */
+    constructor(dialogElement, config) {
+        this.dialogContentElement = dialogElement
 
         this.config = config ?? {}
         this.#initConfig()
@@ -43,7 +59,7 @@ class Dialog {
         this.dialogCloseButton = undefined
         this.dialogSpinner = undefined
 
-        this.#is_open = false
+        this.is_open = false
         this.#initDialog()
     }
 
@@ -174,7 +190,7 @@ class Dialog {
 
     close() {
 
-        if (this.#is_open !== true) {
+        if (this.is_open !== true) {
             console.warn("Closing a Dialog while it's already closed")
             return
         }
@@ -189,12 +205,12 @@ class Dialog {
 
         // Close dialog
         this.#closeDialog()
-        this.#is_open = false
+        this.is_open = false
     }
 
     show() {
 
-        if (this.#is_open !== false) {
+        if (this.is_open !== false) {
             console.warn("Opening a Dialog while it's already opened")
             return
         }
@@ -210,19 +226,19 @@ class Dialog {
         this.dialogContainer.setAttribute("open", "")
 
         // Set the dialog status as open
-        this.#is_open = true
+        this.is_open = true
 
         if (typeof this.config["onshow"] === "function") {
             // Run onshow callback if exists
             const result = this.config.onshow()
             if (this.config["dom"] !== true &&
                 typeof result === "string") {
-                    
+
                 // Check if dialog was closed before loading content
-                if (this.#is_open !== true) {
+                if (this.is_open !== true) {
                     return
                 }
-                
+
                 // Load html into the dialog element
                 this.dialogContentElement.innerHTML = result
             }

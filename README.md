@@ -30,7 +30,7 @@ Create a div element with the class `dialog`
     <h1>My Dialog</h1>
 </div>
 ```
-*Note: Make sure to set a `z-index` property for your dialog, it will be used to position the backdrop and close button*
+*Note: Make sure to set a `z-index` property for your dialog, it will be used to position the backdrop (with z-index - 1) and the close button (z-index + 1)*
 
 Use the Dialog class and assign it the dialog element in the constructor along with a configuration object:
 
@@ -43,7 +43,7 @@ const myDialog = new Dialog(dialogElement, {
     backdrop: true, // Enable/Disable backdrop (default: true)
     backdropCanClose: true, // Choose if backdrop can close dialog (default: true)
     closeButton: true, // Enable/Disable close button (default: true)
-    closeButtonPosition: "right" // Set the top corner position for the close button ("left" or "right", default: right)
+    closeButtonPosition: "right", // Set the top corner position for the close button ("left" or "right", default: right)
     dom: true, // Switch this to false in order to use the string returned by onshow() callback as the dialog html. (default: true)
     onshow: () => {
         // Called after the dialog window opens with the spinner visible

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Dialog Test</title>
+
+    <link rel="stylesheet" href="../src/css/dialog.css" />
+
+    <style>
+        #my-dom-dialog {
+            /* Defines the size of dialog window */
+            width: 400px;
+            height: 400px;
+            /* Backdrop has (z-index - 1) and close button (has z-index + 1) */
+            z-index: 10;
+        }
+    </style>
+</head>
+
+<body>
+
+    <button id="open-btn" style="position: absolute; top: 1rem; left: 1rem;">
+        OPEN DIALOG
+    </button>
+
+    <div id="my-dom-dialog" class="dialog">
+        <h1 style="margin: 0;">Dialog</span>
+    </div>
+
+    <script src="../src/js/dialog.js"></script>
+    <script>
+        // Find the dialog content
+        const dialogElement = document.querySelector("#my-dom-dialog")
+
+        // Wrap the content inside a Dialog object
+        const myDialog = new Dialog(dialogElement, {
+            backdrop: true, // Enable/Disable backdrop (default: true)
+            backdropCanClose: true, // Choose if backdrop can close dialog (default: true)
+            closeButton: true, // Enable/Disable close button (default: true)
+            closeButtonPosition: "right", // Set the top corner position for the close button ("left" or "right", default: right)
+            dom: true, // Switch this to false in order to use the string returned by onshow() callback as the dialog html. (default: true)
+            onshow: () => {
+                // Called after the dialog window opens with the spinner visible
+                // If an HTML string is returned and 'dom' is false, it will replace the contents of the dialog box
+                return ""
+            },
+            onload: () => {
+                // Called after the content has been loaded and displayed
+            },
+            onclose: () => {
+                // Called before each closing event,
+                // return false in order to prevent the dialog from closing
+            }
+        })
+
+        document.querySelector("#open-btn").addEventListener("click", (e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            myDialog.show()
+        })
+    </script>
+</body>
+
+</html>
