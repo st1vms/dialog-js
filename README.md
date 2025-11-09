@@ -42,9 +42,9 @@ const dialogElement = document.querySelector("#my-dialog")
 const myDialog = new Dialog(dialogElement, {
     backdrop: true, // Enable/Disable backdrop (default: true)
     backdropCanClose: true, // Choose if backdrop can close dialog (default: true)
-    closeButton: true, // Enable/Disable close button
+    closeButton: true, // Enable/Disable close button (default: true)
     closeButtonPosition: "right" // Set the top corner position for the close button ("left" or "right", default: right)
-    dom: true, // Switch this to false in order to use the string returned by onshow() callback as the dialog html.
+    dom: true, // Switch this to false in order to use the string returned by onshow() callback as the dialog html. (default: true)
     onshow: () => {
         // Called after the dialog window opens with the spinner visible
         // If an HTML string is returned and 'dom' is false, it will replace the contents of the dialog box
