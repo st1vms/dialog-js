@@ -28,8 +28,9 @@ class Dialog {
     #defaultConfig = {
         backdrop: true,
         backdropCanClose: true,
-        dom: true,
-        closeButtonPosition: "right"
+        closeButton: true,
+        closeButtonPosition: "right",
+        dom: true
     }
 
     constructor(dialogContentElement, config) {
@@ -63,7 +64,7 @@ class Dialog {
         if (false === this.dialogContentElement.classList.contains("dialog")) {
             throw new Error("Dialog content element must have class 'dialog'")
         }
-        
+
         // Grab z-index of dialog element
         const dialogZIndex = (parseInt(window.getComputedStyle(this.dialogContentElement).zIndex) || 0)
 
@@ -87,21 +88,23 @@ class Dialog {
         }
 
         // Close button
-        this.dialogCloseButton = document.createElement("button")
-        this.dialogCloseButton.classList.add("dialog-close-button")
-        this.dialogCloseButton.style.zIndex = dialogZIndex + 1 // In front dialog
+        if (this.config["closeButton"] === true) {
+            this.dialogCloseButton = document.createElement("button")
+            this.dialogCloseButton.classList.add("dialog-close-button")
+            this.dialogCloseButton.style.zIndex = dialogZIndex + 1 // In front dialog
 
-        if (this.config.closeButtonPosition === "right") {
-            this.dialogCloseButton.classList.add("right")
-        } else if (this.config.closeButtonPosition === "left") {
-            this.dialogCloseButton.classList.add("left")
+            if (this.config.closeButtonPosition === "right") {
+                this.dialogCloseButton.classList.add("right")
+            } else if (this.config.closeButtonPosition === "left") {
+                this.dialogCloseButton.classList.add("left")
+            }
+
+            this.dialogCloseButton.addEventListener("click", (e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                this.close()
+            })
         }
-
-        this.dialogCloseButton.addEventListener("click", (e) => {
-            e.preventDefault()
-            e.stopPropagation()
-            this.close()
-        })
 
         // Loading spinner
         this.dialogSpinner = this.#createSpinner()
@@ -109,7 +112,10 @@ class Dialog {
         // Construct dialog
         const prevNode = this.dialogContentElement.cloneNode(true)
 
-        this.dialogContainer.appendChild(this.dialogCloseButton)
+        if (this.dialogCloseButton != null) {
+            this.dialogContainer.appendChild(this.dialogCloseButton)
+        }
+
         this.dialogContainer.appendChild(prevNode)
         this.dialogContainer.appendChild(this.dialogSpinner)
 
