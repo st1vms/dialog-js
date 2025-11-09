@@ -1,0 +1,240 @@
+/*****************/
+/* Dialog styles */
+/*****************/
+:root {
+    --dialog-bg-color: rgba(255, 255, 255, 1.0);
+    --dialog-border-color: rgba(0, 0, 0, 1.0);
+
+    --dialog-backdrop-color: rgba(0, 0, 0, 0.4);
+
+    --dialog-btn-bg-color: 0, 0, 0;
+    --dialog-btn-color: rgba(0, 0, 0, 1.0);
+
+    --dialog-spinner-color: rgba(0, 0, 0, 1.0);
+}
+
+.dialog-container {
+    position: absolute;
+    width: fit-content;
+    height: fit-content;
+    top: 50%;
+    left: 50%;
+    opacity: 0;
+    background-color: var(--dialog-bg-color);
+    border-radius: 16px;
+    border: 1px solid var(--dialog-border-color);
+    transform: translate(-50%, -50%) scale(0);
+    transition: opacity 0.4s ease, transform 0.3s ease;
+}
+
+.dialog-container[open] {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.dialog {
+    position: relative;
+    opacity: 0;
+    background-color: inherit;
+    border-radius: inherit;
+}
+
+.dialog[open] {
+    opacity: 1;
+}
+
+.dialog-backdrop {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: var(--dialog-backdrop-color);
+    pointer-events: auto;
+    inset: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.dialog-close-button {
+    position: absolute;
+    width: 2em;
+    height: 2em;
+    border-color: transparent;
+    border-radius: 50%;
+    background-color: transparent;
+    background-position: center;
+}
+
+.dialog-close-button.right {
+    top: 0.25em;
+    right: 0.25em;
+}
+
+.dialog-close-button.left {
+    top: 0.25em;
+    left: 0.25em;
+}
+
+.dialog-close-button:hover:not(:active) {
+    background: rgba(var(--dialog-btn-bg-color), 0.15) radial-gradient(circle, transparent 1%, rgba(var(--dialog-btn-bg-color), 0.15) 1%) center/15000%;
+}
+
+.dialog-close-button:active {
+    background-color: rgba(var(--dialog-btn-bg-color), 0.5);
+    background-size: 100%;
+    transition: background 0s;
+}
+
+.dialog-close-button::after {
+    content: "\2715";
+    font-size: 1em;
+    color: var(--dialog-btn-color);
+}
+
+/**************************/
+/* Loading spinner styles */
+/**************************/
+
+.dialog-container .spinner {
+    --spinner-color: var(--dialog-spinner-color);
+    --spinner-circle-width: 6px;
+    position: absolute;
+    width: 4em;
+    height: 4em;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: inherit;
+    pointer-events: none;
+}
+
+.dialog-container .spinner-container {
+    pointer-events: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 50%;
+    left: 50%;
+    margin-top: -50%;
+    margin-left: -50%;
+    animation: spinner-linspin 1568.23529647ms linear infinite;
+}
+
+.dialog-container .spinner-rotator {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    animation: spinner-easespin 5332ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both;
+}
+
+.dialog-container .spinner-left {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 50%;
+    overflow: hidden;
+}
+
+.dialog-container .spinner-right {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 50%;
+    bottom: 0;
+    overflow: hidden;
+}
+
+.dialog-container .spinner-circle {
+    box-sizing: border-box;
+    position: absolute;
+    width: 200%;
+    height: 100%;
+    border-style: solid;
+    border-color: var(--spinner-color) var(--spinner-color) transparent;
+    border-radius: 50%;
+    border-width: var(--spinner-circle-width);
+}
+
+.dialog-container .spinner-left>.spinner-circle {
+    left: 0;
+    right: -100%;
+    border-right-color: transparent;
+    animation: spinner-left-spin 1333ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both;
+}
+
+.dialog-container .spinner-right>.spinner-circle {
+    left: -100%;
+    right: 0;
+    border-left-color: transparent;
+    animation: right-spin 1333ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both;
+}
+
+@keyframes spinner-linspin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes spinner-easespin {
+    12.5% {
+        transform: rotate(135deg);
+    }
+
+    25% {
+        transform: rotate(270deg);
+    }
+
+    37.5% {
+        transform: rotate(405deg);
+    }
+
+    50% {
+        transform: rotate(540deg);
+    }
+
+    62.5% {
+        transform: rotate(675deg);
+    }
+
+    75% {
+        transform: rotate(810deg);
+    }
+
+    87.5% {
+        transform: rotate(945deg);
+    }
+
+    to {
+        transform: rotate(1080deg);
+    }
+}
+
+@keyframes spinner-left-spin {
+    0% {
+        transform: rotate(130deg);
+    }
+
+    50% {
+        transform: rotate(-5deg);
+    }
+
+    to {
+        transform: rotate(130deg);
+    }
+}
+
+@keyframes right-spin {
+    0% {
+        transform: rotate(-130deg);
+    }
+
+    50% {
+        transform: rotate(5deg);
+    }
+
+    to {
+        transform: rotate(-130deg);
+    }
+}
