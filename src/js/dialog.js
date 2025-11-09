@@ -212,19 +212,20 @@ class Dialog {
         // Set the dialog status as open
         this.#is_open = true
 
-        // Run onshow callback if exists
         if (typeof this.config["onshow"] === "function") {
+            // Run onshow callback if exists
             const result = this.config.onshow()
             if (this.config["dom"] !== true &&
                 typeof result === "string") {
+                    
+                // Check if dialog was closed before loading content
+                if (this.#is_open !== true) {
+                    return
+                }
+                
                 // Load html into the dialog element
                 this.dialogContentElement.innerHTML = result
             }
-        }
-
-        if (this.#is_open !== true) {
-            // Dialog was closed before loading content
-            return
         }
 
         // Show dialog content
