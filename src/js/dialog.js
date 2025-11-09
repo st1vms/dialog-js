@@ -29,6 +29,7 @@ SOFTWARE.
  * @property {boolean} [closeButton=true] Whether to show a close button
  * @property {"left"|"right"} [closeButtonPosition="right"] Top corner position of the close button (default: right)
  * @property {boolean} [dom=true] If false, use the string returned by onshow instead of the DOM element
+ * @property {boolean} [spinner=true] Whether to show the loading spinner 
  * @property {() => string|void|Promise} [onshow] Called after the dialog box opens.
  * @property {() => void|Promise} [onload] Called after the content has been loaded and displayed.
  * @property {() => boolean|void|Promise} [onclose] Called before each closure; returns false to cancel the closure.
@@ -42,7 +43,8 @@ class Dialog {
         backdropCanClose: true,
         closeButton: true,
         closeButtonPosition: "right",
-        dom: true
+        dom: true,
+        spinner: true
     }
 
     /**
@@ -128,8 +130,6 @@ class Dialog {
             })
         }
 
-        // Loading spinner
-        this.dialogSpinner = this.#createSpinner()
 
         // Construct dialog
         const prevNode = this.dialogContentElement.cloneNode(true)
@@ -139,7 +139,12 @@ class Dialog {
         }
 
         this.dialogContainer.appendChild(prevNode)
-        this.dialogContainer.appendChild(this.dialogSpinner)
+
+        // Loading spinner
+        if (this.config["spinner"] === true) {
+            this.dialogSpinner = this.#createSpinner()
+            this.dialogContainer.appendChild(this.dialogSpinner)
+        }
 
         this.dialogContentElement.replaceWith(this.dialogContainer)
         this.dialogContentElement = prevNode
@@ -226,7 +231,9 @@ class Dialog {
         }
 
         // Open dialog
-        this.#showSpinner()
+        if (this.config["spinner"] === true) {
+            this.#showSpinner()
+        }
 
         if (this.config.backdrop !== false) {
             // Insert and configure backdrop
@@ -263,8 +270,11 @@ class Dialog {
             this.dialogContentElement.innerHTML = html
         }
 
+        if (this.config["spinner"] === true) {
+            this.#hideSpinner()
+        }
+
         // Show dialog content
-        this.#hideSpinner()
         this.dialogContentElement.setAttribute("open", "")
 
         // Check if the callback is async

@@ -44,7 +44,8 @@ const myDialog = new Dialog(dialogElement, {
     backdropCanClose: true, // Choose if backdrop can close dialog (default: true)
     closeButton: true, // Enable/Disable close button (default: true)
     closeButtonPosition: "right", // Set the top corner position for the close button ("left" or "right", default: right)
-    dom: true, // Switch this to false in order to use the string returned by onshow() callback as the dialog html. (default: true)
+    dom: true, // Switch this to false in order to use the string returned by onshow() callback as the dialog html. (default: true),
+    spinner: true, // Whether to show the loading spinner before onload
     onshow: () => {
         // Called after the dialog window opens with the spinner visible
         // If an HTML string is returned and 'dom' is false, it will replace the contents of the dialog box
@@ -61,6 +62,12 @@ const myDialog = new Dialog(dialogElement, {
 
 // Show the dialog
 myDialog.show()
+
+// Boolean flag indicating if the dialog is open
+console.log(myDialog.is_open)
+
+// Boolean flag indicating if the dialog finished loading
+console.log(myDialog.is_loading)
 
 // Close the dialog
 myDialog.close()
