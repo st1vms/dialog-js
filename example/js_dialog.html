@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>JS Dialog Test</title>
+
+    <link rel="stylesheet" href="../src/css/dialog.css" />
+
+    <style>
+        #my-dialog {
+            /* Defines the size of dialog window */
+            width: 400px;
+            height: 400px;
+            /* Backdrop has (z-index - 1) and close button (has z-index + 1) */
+            z-index: 10;
+        }
+    </style>
+</head>
+
+<body>
+
+    <button id="open-btn" style="position: absolute; top: 1rem; left: 1rem;">
+        OPEN DIALOG
+    </button>
+
+    <div id="my-dialog" class="dialog"></div>
+
+    <script src="../src/js/dialog.js"></script>
+    <script>
+
+        async function sleep(ms) {
+            return new Promise(r => setTimeout(r, ms));
+        }
+
+        const btn = document.querySelector("#open-btn")
+
+        // Find the dialog content
+        const dialogElement = document.querySelector("#my-dialog")
+
+        const myDialog = new Dialog(dialogElement, {
+            backdrop: true,
+            backdropCanClose: true,
+            closeButton: true,
+            closeButtonPosition: "right",
+            dom: false,
+            onshow: async function () {
+
+                btn.textContent = "..."
+                await sleep(5000)
+                btn.textContent = "OPEN DIALOG"
+
+                return `
+                <h1 style="margin:0; justify-self:center;">
+                    Test
+                </h1>
+                `
+            },
+            onload: () => {
+                // Called after the content has been loaded and displayed
+            },
+            onclose: () => {
+                // Called before each closing event,
+                // return false in order to prevent the dialog from closing
+            }
+        })
+
+        btn.addEventListener("click", (e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            myDialog.show()
+        })
+    </script>
+</body>
+
+</html>

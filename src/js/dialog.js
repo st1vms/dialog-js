@@ -29,13 +29,14 @@ SOFTWARE.
  * @property {boolean} [closeButton=true] Whether to show a close button
  * @property {"left"|"right"} [closeButtonPosition="right"] Top corner position of the close button (default: right)
  * @property {boolean} [dom=true] If false, use the string returned by onshow instead of the DOM element
- * @property {() => string|void} [onshow] Called after the dialog box opens.
- * @property {() => void} [onload] Called after the content has been loaded and displayed.
- * @property {() => boolean|void} [onclose] Called before each closure; returns false to cancel the closure.
+ * @property {() => string|void|Promise} [onshow] Called after the dialog box opens.
+ * @property {() => void|Promise} [onload] Called after the content has been loaded and displayed.
+ * @property {() => boolean|void|Promise} [onclose] Called before each closure; returns false to cancel the closure.
  */
 class Dialog {
 
     is_open;
+    is_loading;
     #defaultConfig = {
         backdrop: true,
         backdropCanClose: true,
@@ -60,7 +61,12 @@ class Dialog {
         this.dialogSpinner = undefined
 
         this.is_open = false
+        this.is_loading = false
         this.#initDialog()
+    }
+
+    #is_async(func) {
+        return func?.constructor?.name === 'AsyncFunction';
     }
 
     #initConfig() {
@@ -188,19 +194,23 @@ class Dialog {
         }
     }
 
-    close() {
+    async close() {
 
         if (this.is_open !== true) {
             console.warn("Closing a Dialog while it's already closed")
             return
         }
 
-        // Run onclose callback if exists
-        if (typeof this.config["onclose"] === "function") {
-            // Check if we should block dialog closing
-            if (false === this.config.onclose()) {
-                return
-            }
+        if (this.#is_async(this.config["onshow"]) === true &&
+            // Run async onclose callback
+            false === await this.config.onclose()) {
+            return
+        }
+        else if (typeof this.config["onclose"] === "function" &&
+            // Run onclose callback
+            false === this.config.onclose()) {
+            // Block dialog closing
+            return
         }
 
         // Close dialog
@@ -208,14 +218,14 @@ class Dialog {
         this.is_open = false
     }
 
-    show() {
+    async show() {
 
-        if (this.is_open !== false) {
-            console.warn("Opening a Dialog while it's already opened")
+        if (this.is_open !== false || this.is_loading === true) {
+            console.warn("Opening a Dialog while it's already opened/loading")
             return
         }
 
-        // Show dialog
+        // Open dialog
         this.#showSpinner()
 
         if (this.config.backdrop !== false) {
@@ -225,32 +235,47 @@ class Dialog {
 
         this.dialogContainer.setAttribute("open", "")
 
-        // Set the dialog status as open
+        // Set the dialog status as open and loading
         this.is_open = true
+        this.is_loading = true
 
-        if (typeof this.config["onshow"] === "function") {
-            // Run onshow callback if exists
-            const result = this.config.onshow()
-            if (this.config["dom"] !== true &&
-                typeof result === "string") {
+        let html = ""
 
-                // Check if dialog was closed before loading content
-                if (this.is_open !== true) {
-                    return
-                }
+        // Check if the callback is async
+        if (this.#is_async(this.config["onshow"]) === true) {
+            // Run async onshow callback
+            html = await this.config.onshow()
+        } else if (typeof this.config["onshow"] === "function") {
+            // Run onshow callback
+            html = this.config.onshow()
+        }
 
-                // Load html into the dialog element
-                this.dialogContentElement.innerHTML = result
-            }
+        // Check if dialog was closed before loading content
+        if (this.is_open !== true) {
+            // Signal loading finished
+            this.is_loading = false
+            return
+        }
+
+        if (this.config["dom"] !== true &&
+            typeof html === "string") {
+            // Load html into the dialog element
+            this.dialogContentElement.innerHTML = html
         }
 
         // Show dialog content
         this.#hideSpinner()
         this.dialogContentElement.setAttribute("open", "")
 
-        // Run onload callback if exists
-        if (typeof this.config["onload"] === "function") {
+        // Check if the callback is async
+        if (this.#is_async(this.config["onload"]) === true) {
+            await this.config.onload()
+        } else if (typeof this.config["onload"] === "function") {
+            // Run onload callback if exists
             this.config.onload()
         }
+
+        // Signal loading finished
+        this.is_loading = false
     }
 }
